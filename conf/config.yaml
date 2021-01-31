@@ -1,0 +1,10 @@
+mode: debug
+port: 9999
+url: http://127.0.0.1:9090
+max_check_count: 12
+database:
+  name: mall
+  host: 127.0.0.1:3306
+  username: root
+  password: 123456
+
