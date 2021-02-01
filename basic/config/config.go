@@ -13,12 +13,13 @@ import (
 	log "github.com/micro/go-micro/v2/logger"
 )
 
-
 var (
 	defaultRootPath         = "app"
 	defaultConfigFilePrefix = "application-"
 	etcdConfig              defaultEtcdConfig
+	redisConfig             defaultRedisConfig
 	mysqlConfig             defaultMysqlConfig
+	jwtConfig               defaultJwtConfig
 	profiles                defaultProfiles
 	m                       sync.RWMutex
 	inited                  bool
@@ -31,7 +32,7 @@ func Init() {
 	defer m.Unlock()
 
 	if inited {
-		log.Logf(log.TraceLevel,"[InitConfig] 配置已经初始化过")
+		log.Logf(log.TraceLevel, "[InitConfig] 配置已经初始化过")
 		return
 	}
 
@@ -43,12 +44,12 @@ func Init() {
 	os.Chdir(appPath)
 
 	// 找到application.yml文件
-	if err:= config.Load(file.NewSource(file.WithPath(pt + "/application.yml"))); err != nil {
+	if err := config.Load(file.NewSource(file.WithPath(pt + "/application.yml"))); err != nil {
 		panic(err)
 	}
 
 	// 找到需要引入的新配置文件
-	if err:= config.Get(defaultRootPath, "profiles").Scan(&profiles); err != nil {
+	if err := config.Get(defaultRootPath, "profiles").Scan(&profiles); err != nil {
 		panic(err)
 	}
 
@@ -74,7 +75,8 @@ func Init() {
 	// 赋值
 	config.Get(defaultRootPath, "etcd").Scan(&etcdConfig)
 	config.Get(defaultRootPath, "mysql").Scan(&mysqlConfig)
-
+	config.Get(defaultRootPath, "redis").Scan(&redisConfig)
+	config.Get(defaultRootPath, "jwt").Scan(&jwtConfig)
 	// 标记已经初始化
 	inited = true
 }
@@ -87,4 +89,15 @@ func GetMysqlConfig() (ret MysqlConfig) {
 // GetEtcdConfig 获取Etcd配置
 func GetEtcdConfig() (ret EtcdConfig) {
 	return etcdConfig
+}
+
+// GetRedisConfig 获取Redis配置
+func GetRedisConfig() (ret RedisConfig) {
+	return redisConfig
+}
+
+// GetJwtConfig 获取Jwt配置
+func GetJwtConfig() (ret JwtConfig) {
+
+	return jwtConfig
 }

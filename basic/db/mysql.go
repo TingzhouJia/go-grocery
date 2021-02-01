@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"grocery/user-service/basic/config"
+	"grocery/basic/config"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"

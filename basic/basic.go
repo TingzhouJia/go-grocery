@@ -1,11 +1,13 @@
 package basic
 
 import (
-	"grocery/user-service/basic/config"
-	"grocery/user-service/basic/db"
+	"grocery/basic/config"
+	"grocery/basic/db"
+	"grocery/basic/redis"
 )
 
 func Init() {
 	config.Init()
 	db.Init()
+	redis.Init()
 }

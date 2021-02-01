@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/micro/go-micro/v2/logger"
-	"grocery/user-service/basic/config"
+	"grocery/basic/config"
 	"sync"
 )
 
