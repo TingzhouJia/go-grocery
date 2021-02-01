@@ -42,7 +42,7 @@ func NewUserEndpoints() []*api.Endpoint {
 // Client API for User service
 
 type UserService interface {
-	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	QueryUserByName(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type userService struct {
@@ -57,8 +57,8 @@ func NewUserService(name string, c client.Client) UserService {
 	}
 }
 
-func (c *userService) Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "User.Call", in)
+func (c *userService) QueryUserByName(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "User.QueryUserByName", in)
 	out := new(Response)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -70,12 +70,12 @@ func (c *userService) Call(ctx context.Context, in *Request, opts ...client.Call
 // Server API for User service
 
 type UserHandler interface {
-	Call(context.Context, *Request, *Response) error
+	QueryUserByName(context.Context, *Request, *Response) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
 	type user interface {
-		Call(ctx context.Context, in *Request, out *Response) error
+		QueryUserByName(ctx context.Context, in *Request, out *Response) error
 	}
 	type User struct {
 		user
@@ -88,6 +88,6 @@ type userHandler struct {
 	UserHandler
 }
 
-func (h *userHandler) Call(ctx context.Context, in *Request, out *Response) error {
-	return h.UserHandler.Call(ctx, in, out)
+func (h *userHandler) QueryUserByName(ctx context.Context, in *Request, out *Response) error {
+	return h.UserHandler.QueryUserByName(ctx, in, out)
 }
