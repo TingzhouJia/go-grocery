@@ -1,25 +1,45 @@
 package main
 
 import (
-	"auth/handler"
-	pb "auth/proto"
+	"fmt"
+	"github.com/micro/cli/v2"
+	"github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/logger"
+	"github.com/micro/go-micro/v2/registry"
+	"github.com/micro/go-micro/v2/registry/etcd"
+	"grocery/basic/config"
+	"grocery/user-service/model"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
+	"grocery/auth/handler"
+	pb "grocery/auth/proto"
 )
 
 func main() {
-	// Create service
-	srv := service.New(
-		service.Name("auth"),
-		service.Version("latest"),
-	)
 
+
+	Reg:=etcd.NewRegistry(registryOptions)
+	// Create service
+	srv := micro.NewService(
+		micro.Name("auth"),
+		micro.Registry(Reg),
+		micro.Version("latest"),
+	)
+	srv.Init(
+		micro.Action(func(context *cli.Context) error {
+			model.Init()
+			return nil
+
+		}),
+	)
 	// Register handler
-	pb.RegisterAuthHandler(srv.Server(), new(handler.Auth))
+	pb.RegisterServiceHandler(srv.Server(), new(handler.Auth))
 
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
 	}
+}
+func registryOptions(ops *registry.Options) {
+	etcdCfg := config.GetEtcdConfig()
+	ops.Addrs = []string{fmt.Sprintf("%s:%d", etcdCfg.GetHost(), etcdCfg.GetPort())}
 }
