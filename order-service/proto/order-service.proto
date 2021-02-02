@@ -1,34 +1,44 @@
 syntax = "proto3";
 
-package orderservice;
+package order;
 
-option go_package = "proto;orderservice";
+option go_package = "proto;order";
 
-service OrderService {
-	rpc Call(Request) returns (Response) {}
-	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
-	rpc PingPong(stream Ping) returns (stream Pong) {}
-}
 
-message Message {
-	string say = 1;
+service Orders {
+	rpc New (Request) returns (Response) {
+	}
+	rpc GetOrder (Request) returns (Response) {
+	}
 }
 
 message Request {
-	string name = 1;
+	int64 userId = 1;
+	int64 bookId = 2;
+	int64 orderId = 3;
+}
+
+message Order {
+	int64 id = 1;
+	int64 userId = 2;
+	int64 bookId = 3;
+	int64 invHistoryId = 4;
+	int64 state = 5;
+	int64 createdTime = 6;
+	int64 updatedTime = 7;
 }
 
 message Response {
-	string msg = 1;
+	bool success = 1;
+	Error error = 2;
+	Order order = 3;
 }
 
-message StreamingRequest {
-	int64 count = 1;
+message Error {
+	int32 code = 1;
+	string detail = 2;
 }
 
-message StreamingResponse {
-	int64 count = 1;
-}
 
 message Ping {
 	int64 stroke = 1;
