@@ -30,7 +30,7 @@ func (a Auth) MakeAccessToken(ctx context.Context, request *pb.Request, response
 	return nil
 }
 
-func (a Auth) DelUserAccessToken(ctx context.Context, request *pb.Request, response *pb.Response) error {
+func (a *Auth) DelUserAccessToken(ctx context.Context, request *pb.Request, response *pb.Response) error {
 	log.Infof("[DelUserAccessToken] 清除用户token")
 	err := accessService.DelUserAccessToken(request.Token)
 	if err != nil {
@@ -45,5 +45,22 @@ func (a Auth) DelUserAccessToken(ctx context.Context, request *pb.Request, respo
 	return nil
 }
 
+func (s *Auth) GetCachedAccessToken(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
+	log.Infof("[GetCachedAccessToken] 获取缓存的token，%d", req.UserId)
+	token, err := accessService.GetCachedAccessToken(&access.Subject{
+		ID: strconv.FormatInt(int64(req.UserId), 10),
+	})
+	if err != nil {
+		rsp.Error = &pb.Error{
+			Detail: err.Error(),
+		}
+
+		log.Errorf("[GetCachedAccessToken] 获取缓存的token失败，err：%s", err)
+		return err
+	}
+
+	rsp.Token = token
+	return nil
+}
 
 

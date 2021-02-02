@@ -9,6 +9,8 @@ service Service {
 	}
 	rpc DelUserAccessToken (Request) returns (Response) {
 	}
+	rpc GetCachedAccessToken (Request) returns (Response) {
+	}
 }
 
 message Error {
