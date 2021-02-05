@@ -4,6 +4,7 @@ import (
 	"context"
 	log "github.com/micro/go-micro/v2/logger"
 	"grocery/order-service/model/orders"
+	payment "grocery/payment-service/proto"
 )
 
 var (
@@ -16,7 +17,7 @@ func Init() {
 }
 
 // PayOrder 订单支付消息
-func PayOrder(ctx context.Context, event *payS.PayEvent) (err error) {
+func PayOrder(ctx context.Context, event *payment.PayEvent) (err error) {
 	log.Infof("[PayOrder] 收到支付订单通知，%d，%d", event.OrderId, event.State)
 
 	err = ordersService.UpdateOrderState(event.OrderId, int(event.State))
