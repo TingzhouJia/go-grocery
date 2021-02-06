@@ -15,6 +15,7 @@ import (
 	"grocery/order-service/model/orders"
 	pb "grocery/order-service/proto"
 	"grocery/order-service/subscriber"
+	"time"
 )
 var (
 	appName = "orders_srv"
@@ -33,6 +34,9 @@ func main() {
 		micro.Version("latest"),
 		micro.Registry(micReg),
 		micro.Address(cfg.Addr()),
+		//进行健康检查
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*20),
 	)
 	srv.Init(
 		micro.Action(func(context *cli.Context) error {
