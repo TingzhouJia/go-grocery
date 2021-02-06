@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	hystrix_go "github.com/afex/hystrix-go/hystrix"
 	"github.com/micro/go-micro/v2/client"
 	log "github.com/micro/go-micro/v2/logger"
+	"github.com/micro/go-plugins/wrapper/breaker/hystrix/v2"
 	auth "grocery/auth/proto"
 	inventory "grocery/inventory-srv/proto"
 	order "grocery/order-service/proto"
@@ -27,8 +29,20 @@ type Error struct {
 }
 
 func Init() {
-	serviceClient = order.NewOrdersService("mu.micro.book.srv.orders", client.DefaultClient)
-	authClient = auth.NewService("mu.micro.book.srv.auth", client.DefaultClient)
+	hystrix_go.DefaultVolumeThreshold = 1
+	hystrix_go.DefaultErrorPercentThreshold = 1
+	cl := hystrix.NewClientWrapper()(client.DefaultClient)
+	cl.Init(
+
+		client.Retries(3),
+
+		client.Retry(func(ctx context.Context, req client.Request, retryCount int, err error) (bool, error) {
+			//log.Log(req.Method(), retryCount, " client retry")
+			return true, nil
+		}),
+	)
+	serviceClient = order.NewOrdersService("mu.micro.book.srv.orders", cl)
+	authClient = auth.NewService("mu.micro.book.srv.auth", cl)
 }
 
 func New(w http.ResponseWriter, r *http.Request) {
